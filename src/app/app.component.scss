@@ -1,5 +1,5 @@
 :host {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
+  font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 14px;
   color: #333;
@@ -86,7 +86,7 @@ svg.material-icons:not(:last-child) {
   border: 1px solid #eee;
   background-color: #fafafa;
   height: 40px;
-  width: 200px;
+  width: 150px;
   margin: 0 8px 16px;
   padding: 16px;
   display: flex;
@@ -161,6 +161,8 @@ a:hover {
 }
 
 .terminal {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
   position: relative;
   width: 80%;
   max-width: 600px;

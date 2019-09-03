@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm">
+      <h3>猜數字</h3>
+      <div class="wrapper">
+        <canvas drawable (newImage)="predictInput$.next($event)"></canvas><br>
+      </div>
+      <button class="btn btn-sm btn-warning" (click)="clear();">Erase</button>
+    </div>
+  </div>
+  <div>
+    <h1>預測的數字是: {{ result }}</h1>
+  </div>
+</div>

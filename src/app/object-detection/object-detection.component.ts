@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as cocoSSD from '@tensorflow-models/coco-ssd';
 import { from, animationFrameScheduler, timer, defer } from 'rxjs';
 import { concatMap, tap, repeat, takeUntil, observeOn } from 'rxjs/operators';
+import { SubSink } from 'subsink';
 
 @Component({
   selector: 'app-object-detection',
   templateUrl: './object-detection.component.html',
   styleUrls: ['./object-detection.component.scss']
 })
-export class ObjectDetectionComponent implements OnInit {
+export class ObjectDetectionComponent implements OnInit, OnDestroy {
+  private subs = new SubSink();
+
   // 設定Webcam
   video: HTMLVideoElement;
 
@@ -24,15 +27,22 @@ export class ObjectDetectionComponent implements OnInit {
         takeUntil(timer(1000)),
         repeat()
       );
-    // 訂閱Observeable
-    // 下載模型
-    from(cocoSSD.load({ base: 'mobilenet_v2' })).pipe(
-       // 預測
-      concatMap(model => action$(model)),
-      // repeat(),
-    ).subscribe();
 
+    // 訂閱Observeable
+    this.subs.add(
+      // 下載模型
+      from(cocoSSD.load({ base: 'mobilenet_v2' })).pipe(
+        // 預測
+        concatMap(model => action$(model)),
+        // repeat(),
+      ).subscribe()
+    );
   }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
   // 初始化相機
   webcam_init() {
     this.video = document.getElementById('vid') as HTMLVideoElement;

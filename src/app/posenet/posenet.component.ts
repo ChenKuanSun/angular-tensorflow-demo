@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as posenet from '@tensorflow-models/posenet';
 import { from, defer, animationFrameScheduler, timer, of, Observable } from 'rxjs';
 import { concatMap, tap, map, observeOn, takeUntil, repeat } from 'rxjs/operators';
+import { SubSink } from 'subsink';
 
 @Component({
   selector: 'app-posenet',
@@ -9,7 +10,9 @@ import { concatMap, tap, map, observeOn, takeUntil, repeat } from 'rxjs/operator
   styleUrls: ['./posenet.component.scss'],
   // changeDetection: 0,
 })
-export class PosenetComponent implements OnInit {
+export class PosenetComponent implements OnInit, OnDestroy {
+  private subs = new SubSink();
+
   // 線條寬度，顏色
   lineWidth = 2;
   color = 'aqua';
@@ -23,7 +26,6 @@ export class PosenetComponent implements OnInit {
   constructor() {
     // 載入圖片
     this.imageObj.src = this.imageName;
-
   }
 
   ngOnInit() {
@@ -37,18 +39,20 @@ export class PosenetComponent implements OnInit {
         repeat()
       );
     // 訂閱Observeable
-    // 下載模型
-    from(posenet.load({
-      architecture: 'ResNet50',
-      outputStride: 32,
-      inputResolution: 257,
-      quantBytes: 2
-    })).pipe(
-      // 讀取圖片
-      concatMap(model => this.loadImage$().pipe(map(() => model))),
-      // 預測
-      concatMap(model => action$(model)),
-    ).subscribe();
+    this.subs.add(
+      // 下載模型
+      from(posenet.load({
+        architecture: 'ResNet50',
+        outputStride: 32,
+        inputResolution: 257,
+        quantBytes: 2
+      })).pipe(
+        // 讀取圖片
+        concatMap(model => this.loadImage$().pipe(map(() => model))),
+        // 預測
+        concatMap(model => action$(model)),
+      ).subscribe()
+    );
   }
 
   // Image Observable
@@ -64,7 +68,11 @@ export class PosenetComponent implements OnInit {
     });
   }
 
-  // util
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  // utils 計算工具
   calDistance(position1: { x: number, y: number }, position2: { x: number, y: number }, ): number {
     return Math.floor(Math.sqrt((position1.x - position2.x) ** 2 + (position1.y - position2.y) ** 2));
   }

@@ -7,6 +7,9 @@ import { PosenetComponent } from './posenet/posenet.component';
 import { WebcamModule } from 'ngx-webcam';
 import { ObjectDetectionComponent } from './object-detection/object-detection.component';
 import { CarlPoleComponent } from './carl-pole/carl-pole.component';
+import { TensorflowTutorialComponent } from './tensorflow-tutorial/tensorflow-tutorial.component';
+import { DrawableDirective } from './draw-number/drawable.directive';
+import { DrawNumberComponent } from './draw-number/draw-number.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +17,9 @@ import { CarlPoleComponent } from './carl-pole/carl-pole.component';
     PosenetComponent,
     ObjectDetectionComponent,
     CarlPoleComponent,
+    TensorflowTutorialComponent,
+    DrawNumberComponent,
+    DrawableDirective,
   ],
   imports: [
     BrowserModule,
