@@ -5,8 +5,9 @@
       <div class="wrapper">
         <canvas drawable (newImage)="predictInput$.next($event)"></canvas><br>
       </div>
-      <button class="btn btn-sm btn-warning" (click)="clear();">Erase</button>
     </div>
+
+    <button class="btn btn-sm btn-warning" (click)="clear();">清除畫布</button>
   </div>
   <div>
     <h1>預測的數字是: {{ result }}</h1>
