@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import { defer, Subject } from 'rxjs';
 import { tap, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { tap, map, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/op
 })
 export class TensorflowTutorialComponent implements OnInit {
 
-
+  // 簡單的線性回歸
   predictInput$ = new Subject<number>();
 
   linearModel: tf.Sequential;
@@ -18,16 +18,16 @@ export class TensorflowTutorialComponent implements OnInit {
   result: number;
 
   train$ = () => defer(async () => {
-    // Define a model for linear regression.
+    // 建立一個模型
     this.linearModel = tf.sequential();
-    // Keras like~
+    // 加入一層
     this.linearModel.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-    // Prepare the model for training: Specify the loss and the optimizer.
+    // 把模型打包，然後決定optimizer
     this.linearModel.compile({ loss: 'meanSquaredError', optimizer: 'sgd' });
-    // Training data, completely random stuff
+    // 定義輸入
     const xs = tf.tensor1d([3.2, 4.4, 5.5]);
     const ys = tf.tensor1d([1.6, 2.7, 3.5]);
-    // Train
+    // 訓練
     return await this.linearModel.fit(xs, ys);
   }).pipe(
     tap(() => console.log('model trained!'))
@@ -53,5 +53,4 @@ export class TensorflowTutorialComponent implements OnInit {
       map((result: number) => this.result = result),
     ).subscribe();
   }
-
 }

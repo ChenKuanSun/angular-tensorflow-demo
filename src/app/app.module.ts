@@ -10,6 +10,7 @@ import { CarlPoleComponent } from './carl-pole/carl-pole.component';
 import { TensorflowTutorialComponent } from './tensorflow-tutorial/tensorflow-tutorial.component';
 import { DrawableDirective } from './draw-number/drawable.directive';
 import { DrawNumberComponent } from './draw-number/draw-number.component';
+import { TensorflowDigitRecognitionComponent } from './tensorflow-digit-recognition/tensorflow-digit-recognition.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { DrawNumberComponent } from './draw-number/draw-number.component';
     TensorflowTutorialComponent,
     DrawNumberComponent,
     DrawableDirective,
+    TensorflowDigitRecognitionComponent,
   ],
   imports: [
     BrowserModule,
