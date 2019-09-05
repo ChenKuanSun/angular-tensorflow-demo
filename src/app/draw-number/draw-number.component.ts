@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { DrawableDirective } from './drawable.directive';
 import * as tf from '@tensorflow/tfjs';
-import { defer, Subject } from 'rxjs';
+import { defer, Subject, of } from 'rxjs';
 import { tap, map, debounceTime, concatMap } from 'rxjs/operators';
 import { SubSink } from 'subsink';
 
@@ -36,41 +36,33 @@ export class DrawNumberComponent implements OnInit, OnDestroy {
    * @returns `output` 傳回一個預測完的字串0-9，
    * 如果沒有預測結果，則回傳`辨識不出來`。
    */
-  predict$ = (imageData: ImageData) => defer(async () => {
+  predict = (imageData: ImageData) => {
     // 把Canvas轉成Tensor Type
     let img: any = tf.browser.fromPixels(imageData, 1);
     img = tf.image.resizeBilinear(img, [28, 28]);
     img = img.reshape([1, 28, 28, 1]);
     img = tf.cast(img, 'float32');
-    return await this.model.predict(img);
-  }).pipe(
-    // 除錯並觀察預測結果
-    tap((output: tf.Tensor) => console.log(output.arraySync())),
-    // 尋找準確度約為100%的值
-    map((output: tf.Tensor) => Array.from(output.argMax(-1).dataSync())[0]),
-    // 過濾沒有結果的字轉成'辨識不出來'，轉換成字串
-    map((output: number) => output ? output.toString() : '辨識不出來')
-  )
+    let output: any = this.model.predict(img);
+    output = Array.from(output.argMax(-1).dataSync())[0];
+    return output ? output.toString() : '辨識不出來';
+  }
 
-  // 還在娘胎裡要做的事
   constructor() {
     // 載入模型
     this.loadModel$().subscribe();
   }
 
-  // 生出來看到人要做的事
   ngOnInit() {
     this.subs.add(
       // 當輸入持續800毫秒未改變就開始預測
       this.predictInput$.pipe(
         debounceTime(800),
-        concatMap((img: ImageData) => this.predict$(img)),
+        map((img: ImageData) => this.predict(img)),
         map((result: string) => this.result = result),
       ).subscribe()
     );
   }
 
-  // 記得剪臍帶
   ngOnDestroy() {
     this.subs.unsubscribe();
   }

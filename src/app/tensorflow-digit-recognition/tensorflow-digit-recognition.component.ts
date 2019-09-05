@@ -1,11 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { MnistData } from './dataPreprocessing/data';
 import * as tf from '@tensorflow/tfjs';
-import { defer, from } from 'rxjs';
+import { defer, from, of } from 'rxjs';
 import { tap, concatMap, map } from 'rxjs/operators';
 import { buildModel, trainModel$ } from './model/cnn';
 
 declare var tfvis: any;
+
+/**
+ * 載入資料集
+ * @returns `data` 回傳載入完成的資料集。
+ */
+class MonadMnistData {
+  static async load() {
+    const data = new MnistData();
+    await data.load();
+    return data;
+  }
+}
 
 @Component({
   selector: 'app-tensorflow-digit-recognition',
@@ -13,16 +25,6 @@ declare var tfvis: any;
   styleUrls: ['./tensorflow-digit-recognition.component.scss']
 })
 export class TensorflowDigitRecognitionComponent implements OnInit {
-
-  /**
-   * 載入資料集
-   * @returns `data` 回傳載入完成的資料集。
-   */
-  loadData$ = () => defer(async () => {
-    const data = new MnistData();
-    await data.load();
-    return data;
-  })
 
   /**
    * 檢視樣本
@@ -66,8 +68,7 @@ export class TensorflowDigitRecognitionComponent implements OnInit {
 
 
   ngOnInit() {
-    console.log('載入資料');
-    this.loadData$().pipe(
+    from(MonadMnistData.load()).pipe(
       tap(() => console.log('檢視樣本')),
       // 載入完之後把資料印出來
       concatMap((data: MnistData) => this.showExamples$(data).pipe(
@@ -110,25 +111,4 @@ export class TensorflowDigitRecognitionComponent implements OnInit {
     testxs.dispose();
     return [preds, labels];
   }
-
-
-  // showAccuracy$ = (model: tf.Sequential, data: MnistData) => defer(async () => {
-  //   const [preds, labels] = this.doPrediction(model, data);
-  //   const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, preds);
-  //   const container = { name: 'Accuracy', tab: 'Evaluation' };
-  //   tfvis.show.perClassAccuracy(container, classAccuracy, this.classNames);
-  //   labels.dispose();
-  // })
-
-  // showConfusion$ = (model: tf.Sequential, data: MnistData) => defer(async () => {
-  //   const [preds, labels] = this.doPrediction(model, data);
-  //   const confusionMatrix = await tfvis.metrics.confusionMatrix(labels, preds);
-  //   const container = { name: 'Confusion Matrix', tab: 'Evaluation' };
-  //   tfvis.render.confusionMatrix(
-  //     container, { values: confusionMatrix }, this.classNames);
-
-  //   labels.dispose();
-  // })
-
-
 }

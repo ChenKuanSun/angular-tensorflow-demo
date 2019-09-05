@@ -53,7 +53,6 @@ export class ObjectDetectionComponent implements OnInit, OnDestroy {
         audio: false,
         video: {
           facingMode: 'user',
-          // deviceId: '5647bba49d7bd5ecb3a2a91302804b2e09f226581c76910676e213b114e6d8ce'
         }
       })
       .then(stream => {
